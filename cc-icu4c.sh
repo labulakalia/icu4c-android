@@ -167,7 +167,7 @@ flag_version=$NO
 action=""
 
 arch_list="arm64"
-api=23
+api=26
 build_dir="./build"
 icu_src_dir="./icu/icu4c"
 install_include_dir="./build/install/include"
@@ -198,7 +198,7 @@ enable_regex=$YES
 enable_samples=$NO
 enable_tests=$NO
 enable_transliteration=$YES
-
+CPU_CORES=$(nproc)
 
 ### --------- Action logic  ---------
 
@@ -289,15 +289,15 @@ build() {
         exit 1
     fi
 
-    IFS=',' read -ra tmp_arch <<< "$arch_list"
-    for tmp in "${tmp_arch[@]}"
-    do
-        if ! build_android "$tmp"; then
-            exit 1
-        fi
-    done
-    unset tmp
-    unset tmp_arch
+    # IFS=',' read -ra tmp_arch <<< "$arch_list"
+    # for tmp in "${tmp_arch[@]}"
+    # do
+    #     if ! build_android "$tmp"; then
+    #         exit 1
+    #     fi
+    # done
+    # unset tmp
+    # unset tmp_arch
 
     return 0
 }
@@ -336,7 +336,7 @@ build_host() {
     (exec "$ICU_SOURCES/source/runConfigureICU" $host_os_build_type \
     --prefix="$host_build_dir/icu_build" $icu_configure_args)
 
-    if ! make -j16; then
+    if ! make -j${CPU_CORES}; then
         cd "$working_dir" || return 1
         return 1
     fi
@@ -359,6 +359,7 @@ build_host() {
     cd "$working_dir" || return 1
     return 0
 }
+
 
 build_android() {
     local arch=$1
@@ -450,7 +451,7 @@ build_android() {
     (exec "$ICU_SOURCES/source/configure" --with-cross-build="$ICU_CROSS_BUILD" \
     $icu_configure_args --host=$TARGET --prefix="$PWD/icu_build")
 
-    if ! make -j16; then
+    if ! make -j${CPU_CORES}; then
         cd "$working_dir" || return 1
         return 1
     fi
