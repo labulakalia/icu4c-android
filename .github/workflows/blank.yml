@@ -22,7 +22,7 @@ jobs:
       - name: Build Icu4c
         run: |
           wget https://github.com/unicode-org/icu/releases/download/release-77-1/icu4c-77_1-src.tgz && tar -zxf icu4c-77_1-src.tgz
-          bash cc-icu4c.sh build --arch=arm --library-type=static --ndk-dir=${ANDROID_NDK} --icu-src-dir=icu --build-dir=./build
+          bash cc-icu4c.sh build --arch=arm,arm64,x86_64 --library-type=static --ndk-dir=${ANDROID_NDK} --icu-src-dir=icu --build-dir=./build
       - name: Upload production artifacts
         uses: actions/upload-artifact@v4
         with:
